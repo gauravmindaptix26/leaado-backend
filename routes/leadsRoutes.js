@@ -8,8 +8,11 @@ import {
   importLeadFromUrl,
   getLeads,
   deleteLead,
-  addWebsiteLeads
+  addWebsiteLeads,
+  addBulkLeads,
+  updateLeadStatus
 } from "../controllers/leadsController.js";
+import authenticateJWT from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -46,10 +49,12 @@ const upload = multer({
   }
 });
 
-router.get("/", getLeads);
-router.post("/upload", upload.array("files", 10), uploadLeads);
-router.post("/import", importLeadFromUrl);
-router.post("/websites", addWebsiteLeads);
-router.delete("/:id", deleteLead);
+router.get("/", authenticateJWT, getLeads);
+router.post("/upload", authenticateJWT, upload.array("files", 10), uploadLeads);
+router.post("/import", authenticateJWT, importLeadFromUrl);
+router.post("/websites", authenticateJWT, addWebsiteLeads);
+router.post("/bulk", authenticateJWT, addBulkLeads);
+router.patch("/:id/status", authenticateJWT, updateLeadStatus);
+router.delete("/:id", authenticateJWT, deleteLead);
 
 export default router;

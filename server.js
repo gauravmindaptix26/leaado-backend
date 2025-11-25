@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js"; // <-- .js extension mandatory
 import leadsRoutes from "./routes/leadsRoutes.js";
 
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -18,7 +19,13 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/leaado";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
+app.use(express.json({ limit: "2mb" }));
 app.use(bodyParser.json());
 
 mongoose

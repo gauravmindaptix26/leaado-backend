@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import path from "path";
@@ -9,7 +8,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import leadsRoutes from "./routes/leadsRoutes.js";
 
-// Load environment variables
+// Load env values (Vercel will inject them)
 dotenv.config();
 
 const app = express();
@@ -17,7 +16,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ⭐ 100% VERCEL COMPATIBLE CORS FIX (NO "*")
+// ⭐ VERCEL-SAFE CORS
 app.use((req, res, next) => {
   const allowedOrigins = [
     "http://localhost:5173",
@@ -33,19 +32,16 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // PRE-FLIGHT FIX
-  if (req.method === "OPTIONS") {
-    return res.status(200).json({});
-  }
+  if (req.method === "OPTIONS") return res.status(200).end();
 
   next();
 });
 
-// Body parsing
+// Body parser
 app.use(bodyParser.json());
 app.use(express.json());
 
-// === Mongo Connection (Run once)
+// ⭐ MongoDB Connect
 if (!global._mongooseConnected) {
   mongoose
     .connect(process.env.MONGO_URI)
@@ -53,20 +49,20 @@ if (!global._mongooseConnected) {
       console.log("MongoDB connected");
       global._mongooseConnected = true;
     })
-    .catch((err) => console.error("Mongo error", err));
+    .catch((err) => console.error("MongoDB error:", err));
 }
 
-// Static folder
+// Static
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadsRoutes);
 
-// Test Route
+// Ping route
 app.get("/", (req, res) => {
-  res.send("API running successfully (Vercel Serverless)");
+  res.send("Backend running on Vercel.");
 });
 
-// Export for Vercel serverless
+// Export
 export default app;

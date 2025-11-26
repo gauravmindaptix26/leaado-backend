@@ -19,12 +19,16 @@ const MONGO_URI = process.env.MONGO_URI;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(
+app.use
   cors({
-    origin: true,
-    credentials: true
-  })
-);
+   origin: [
+    "https://leaado-frontend-5kt3.vercel.app/",
+    'http://localhost:5173'
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+});
+
 app.use(express.json({ limit: "2mb" }));
 app.use(bodyParser.json());
 

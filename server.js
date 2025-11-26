@@ -42,7 +42,6 @@ app.use((req, res, next) => {
 });
 
 // ⭐ Needed for Express CORS compatibility
-app.options("*", cors());
 
 // Body parsing
 app.use(bodyParser.json());

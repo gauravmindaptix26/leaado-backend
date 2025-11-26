@@ -1,5 +1,3 @@
-
-
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -19,18 +17,32 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// === CORS FIX ===
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://leaado-frontend-5kt3.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-  })
-);
+// ⭐ TOP LEVEL CORS (Vercel Serverless Fix)
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "https://leaado-frontend-5kt3.vercel.app"
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS,PATCH");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight (MOST IMPORTANT)
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  next();
+});
+
+// ⭐ Needed for Express CORS compatibility
+app.options("*", cors());
 
 // Body parsing
 app.use(bodyParser.json());
@@ -47,7 +59,7 @@ if (!global._mongooseConnected) {
     .catch((err) => console.error("Mongo error", err));
 }
 
-// Static folder (uploads)
+// Static folder
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // Routes
@@ -59,6 +71,5 @@ app.get("/", (_, res) => {
   res.send("API running successfully (Serverless Mode)");
 });
 
-// === MOST IMPORTANT ===
-// Instead of app.listen() → Export default handler
+// 🚀 Export for Vercel (no app.listen)
 export default app;

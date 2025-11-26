@@ -1,3 +1,5 @@
+// api/index.js (recommended path on Vercel)
+
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -5,51 +7,59 @@ import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import authRoutes from "./routes/authRoutes.js"; // <-- .js extension mandatory
-import leadsRoutes from "./routes/leadsRoutes.js";
 
+import authRoutes from "../routes/authRoutes.js";
+import leadsRoutes from "../routes/leadsRoutes.js";
 
-// Load environment variables from .env file
+// Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;  
-const MONGO_URI = process.env.MONGO_URI;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// === CORS FIX ===
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://leaado-frontend-5kt3.vercel.app", process.env.FRONTEND_URL].filter(Boolean),
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: [
+      "http://localhost:5173",
+      "https://leaado-frontend-5kt3.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
   })
 );
 app.options("*", cors());
 
-app.use(express.json({ limit: "2mb" }));
+// Body parsing
 app.use(bodyParser.json());
+app.use(express.json());
 
+// === Mongo Connection (Run once) ===
+if (!global._mongooseConnected) {
+  mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+      console.log("MongoDB connected");
+      global._mongooseConnected = true;
+    })
+    .catch((err) => console.error("Mongo error", err));
+}
 
-mongoose
-  .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => {
-    console.error("MongoDB connection error:", error.message);
-    process.exit(1);
-  });
+// Static folder (uploads)
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadsRoutes);
 
-app.get("/", (_req, res) => {
-  res.json({ status: "API is running" });
+// Root check
+app.get("/", (_, res) => {
+  res.send("API running successfully (Serverless Mode)");
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// === MOST IMPORTANT ===
+// Instead of app.listen() → Export default handler
+export default app;

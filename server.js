@@ -31,7 +31,6 @@ app.use(
     credentials: true
   })
 );
-app.options("*", cors());
 
 // Body parsing
 app.use(bodyParser.json());

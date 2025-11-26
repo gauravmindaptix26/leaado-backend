@@ -1,4 +1,4 @@
-// api/index.js (recommended path on Vercel)
+
 
 import express from "express";
 import cors from "cors";
@@ -8,8 +8,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 
-import authRoutes from "../routes/authRoutes.js";
-import leadsRoutes from "../routes/leadsRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import leadsRoutes from "./routes/leadsRoutes.js";
 
 // Load environment variables
 dotenv.config();

@@ -1,4 +1,4 @@
-const KARTIK_BASE_URL = process.env.KARTIK_BASE_URL || "https://kartiksetia.com/fill";
+const KARTIK_BASE_URL = process.env.KARTIK_BASE_URL || "http://44.195.71.139:5001/fill";
 const KARTIK_TIMEOUT_MS = Number(process.env.KARTIK_TIMEOUT_MS || 8000);
 
 const buildQuery = (params) => {

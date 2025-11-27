@@ -19,8 +19,8 @@ const __dirname = path.dirname(__filename);
 // ⭐ VERCEL-SAFE CORS
 app.use((req, res, next) => {
   const allowedOrigins = [
+    "https://leaado-frontend.vercel.app",
     "http://localhost:5173",
-    "https://leaado-frontend.vercel.app/",
   ];
 
   const origin = req.headers.origin;

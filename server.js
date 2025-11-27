@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 app.use((req, res, next) => {
   const allowedOrigins = [
     "http://localhost:5173",
-    "https://leaado-frontend-5kt3.vercel.app",
+    "https://leaado-frontend.vercel.app/",
   ];
 
   const origin = req.headers.origin;

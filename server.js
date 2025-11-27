@@ -46,7 +46,7 @@ if (!global._mongooseConnected) {
   mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
-      console.log("MongoDB connected");
+      console.log("MongoDB  is connected");
       global._mongooseConnected = true;
     })
     .catch((err) => console.error("MongoDB error:", err));
@@ -61,7 +61,7 @@ app.use("/api/leads", leadsRoutes);
 
 // Ping route
 app.get("/", (req, res) => {
-  res.send("Backend running on Vercel.");
+  res.send("Backend running on Vercel...");
 });
 
 // Export

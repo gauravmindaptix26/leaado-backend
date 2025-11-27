@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/authRoutes.js";
 import leadsRoutes from "./routes/leadsRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 // Load env values (Vercel will inject them)
 dotenv.config();
@@ -58,6 +59,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadsRoutes);
+app.use("/api/users", userRoutes);
 
 // Ping route
 app.get("/", (req, res) => {
